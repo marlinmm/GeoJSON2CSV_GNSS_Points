@@ -1,14 +1,16 @@
 import os
+from os.path import join
 import glob
 import json
 import csv
 
 # Get list of files in current folder
 path = "C:/Users/marli/Google Drive/Studium/HiWi-Job_DLR/Referenzpunkte_HUSS/March2020/"
-extension = 'geojson'
-list_json = glob.glob('*.{}'.format(extension))
+extension = '*.geojson'
+list_json = glob.glob(join(path, extension))
 names = [w[:-8] for w in list_json]
 print(list_json)
+print(names)
 
 # inititate lists for later use
 accuracy_average_list = []
@@ -48,7 +50,7 @@ for j,file in enumerate(list_json):
         all_accuracy_list.append(all_accuracy)
 
         # loop to check if the accuracy is below 0.03
-        if float((data["features"][i]["properties"]["accuracy"])) <= 0.03:
+        if float((data["features"][i]["properties"]["accuracy"])) <= 0.025:
             counter += 1
 
             # Accuracy
