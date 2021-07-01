@@ -4,8 +4,13 @@ import glob
 import json
 import csv
 
+print("Specify desired accuracy in m (e.g. 0.02): ")
+acc = float(input())
+print("Specify height of RTK stick in m (e.g. 2): ")
+rtk_stick = float(input())
+
 # Get list of files in current folder
-path = "C:/Users/marli/Google Drive/Studium/HiWi-Job_DLR/Referenzpunkte_HUSS/March2020/"
+path = "D:/Aktuelles/DLR/Befliegung_JenaForst/GPS_Stab_Juni"
 extension = '*.geojson'
 list_json = glob.glob(join(path, extension))
 names = [w[:-8] for w in list_json]
@@ -49,8 +54,8 @@ for j,file in enumerate(list_json):
         all_accuracy = float(data["features"][i]["properties"]["accuracy"])
         all_accuracy_list.append(all_accuracy)
 
-        # loop to check if the accuracy is below 0.03
-        if float((data["features"][i]["properties"]["accuracy"])) <= 0.025:
+        # loop to check if the accuracy is below specified value
+        if float((data["features"][i]["properties"]["accuracy"])) <= acc:
             counter += 1
 
             # Accuracy
@@ -71,7 +76,7 @@ for j,file in enumerate(list_json):
             # Altitude
             altitude = float(data["features"][i]["properties"]["altitude"])
             altitude_list.append(altitude)
-            altitude_average = sum(altitude_list)/len(altitude_list)
+            altitude_average = sum(altitude_list)/len(altitude_list) - rtk_stick
 
             # parse to strings
             acc_string = str(accuracy_average)
@@ -104,7 +109,7 @@ for j,file in enumerate(list_json):
 
 rows = zip(names,time_list, accuracy_average_list, x_coord_average_list, y_coord_average_list, altitude_average_list, max_accuracy_list, min_accuracy_list, counter_list, all_data_points_list)
 
-with open("GNSS_Points.csv", "w") as csvFile:
+with open("D:/Aktuelles/DLR/Befliegung_JenaForst/GPS_Stab_Juni/GNSS_Points_Juni_corrected.csv", "w") as csvFile:
     writer = csv.writer(csvFile)
     writer.writerow(["Point", "Time", "Accuracy", "X_Coord", "Y_Coord", "Altitude", "Best_Accuracy", "Worst_Accuracy", "No. Of Used Points", "No. Of All Points"])
     for row in rows:
