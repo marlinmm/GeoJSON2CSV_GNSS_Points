@@ -1,12 +1,12 @@
 import os
-from functools import partial
-import pyproj
-from shapely.ops import transform
 import fiona
+import pyproj
+import numpy as np
 import pandas as pd
 import geopandas as gpd
-import numpy as np
-
+from functools import partial
+from shapely.ops import transform
+from shapely.geometry import Point, mapping
 
 # Set path to POI (point) shapefile
 poi_shapefile = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_poi.shp"
@@ -44,8 +44,6 @@ def extract_points_from_shape(path_to_file):
             point_coordinates = elem["geometry"]["coordinates"]
             return point_coordinates
 
-
-from shapely.geometry import Point, mapping
 
 # Get coordinates to variable
 poi_coordinates = extract_points_from_shape(poi_shapefile)[0:2]
