@@ -10,10 +10,12 @@ print("Specify height of RTK stick in m (e.g. 2): ")
 rtk_stick = float(input())
 
 # Get list of files in current folder
-path = "D:/Aktuelles/DLR/Befliegung_JenaForst/GPS_Stab_Juni"
+path = "C:/Users/muel_m31/Desktop/Befliegung_Mavc2Pro_Min2_03032022/GCPs/"
+out_dir = "C:/Users/muel_m31/Desktop/Befliegung_Mavc2Pro_Min2_03032022/GCPs/"
+out_filename = "jena_forst_03032022.csv"
 extension = '*.geojson'
 list_json = glob.glob(join(path, extension))
-names = [w[:-8] for w in list_json]
+names = [w[len(path):-8] for w in list_json]
 print(list_json)
 print(names)
 
@@ -109,7 +111,7 @@ for j,file in enumerate(list_json):
 
 rows = zip(names,time_list, accuracy_average_list, x_coord_average_list, y_coord_average_list, altitude_average_list, max_accuracy_list, min_accuracy_list, counter_list, all_data_points_list)
 
-with open("D:/Aktuelles/DLR/Befliegung_JenaForst/GPS_Stab_Juni/GNSS_Points_Juni_corrected.csv", "w") as csvFile:
+with open(os.path.join(out_dir, out_filename), "w") as csvFile:
     writer = csv.writer(csvFile)
     writer.writerow(["Point", "Time", "Accuracy", "X_Coord", "Y_Coord", "Altitude", "Best_Accuracy", "Worst_Accuracy", "No. Of Used Points", "No. Of All Points"])
     for row in rows:
