@@ -9,16 +9,19 @@ import numpy as np
 
 
 # Set path to POI (point) shapefile
-poi_shapefile = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/litchi_test_file_centerpoint.shp"
+poi_shapefile = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_poi.shp"
 
 # Set output path and output filename:
 out_path = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Missions"
-out_filename = "jena_forst_test3.csv"
+out_filename = "jena_forst_test"
 
 # Set other flight parameters:
 altitude = 120  # meters
 photo_timeinterval = 3  # seconds
-poi_radius = 150  # meters
+poi_radius = 100  # meters
+
+final_out_filename = out_filename + "_" + str(altitude) + "m_" + str(photo_timeinterval) + "s_" + str(poi_radius) + \
+                     "m.csv"
 
 # Load default Litchi mission file
 litchi_default_mission = "empty_litchi_mission.csv"
@@ -108,4 +111,4 @@ df = pd.DataFrame(mission_values_array, columns=column_titles_list)
 df = df.astype(dataTypeDict)
 
 # Export to csv
-df.to_csv(os.path.join(out_path, out_filename), index=False)
+df.to_csv(os.path.join(out_path, final_out_filename), index=False)
