@@ -14,7 +14,7 @@ from shapely.geometry import Point
 #             return point_coordinates[0:2]
 
 
-def shape_to_grid_mission(path_to_file):
+def shape_to_grid_mission(path_to_file, altitude, side_overlap):
     # path_to_file = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_polygon.shp"
 
     jena_forst_polygon = gpd.read_file(path_to_file)
@@ -28,10 +28,10 @@ def shape_to_grid_mission(path_to_file):
     jena_forst_bouds_32632 = jena_forst_32632.total_bounds
     print(jena_forst_32632.total_bounds)
 
-    altitude = 150
-
-    front_overlap = 60
-    side_overlap = 60
+    # altitude = 150
+    #
+    # front_overlap = 60
+    # side_overlap = 60
     side_multiplicator = 1.333
 
     side_distance = altitude * side_multiplicator - (altitude * side_multiplicator / 100 * side_overlap)
