@@ -7,16 +7,17 @@ import geopandas as gpd
 from functools import partial
 from shapely.ops import transform
 from shapely.geometry import Point, mapping
+from xml.etree.ElementTree import ElementTree
 
-# Set path to POI (point) shapefile
-poi_shapefile = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_poi.shp"
+# Set path to POI (point) file (.shp or .kml)
+poi_file = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_poi.kml"
 
 # Set output path and output filename:
 out_path = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Missions"
 out_filename = "jena_forst_test"
 
 # Set other flight parameters:
-altitude = 120  # meters
+altitude = 100  # meters
 photo_timeinterval = 3  # seconds
 poi_radius = 100  # meters
 
@@ -42,11 +43,25 @@ def extract_points_from_shape(path_to_file):
         for elem in source:
             # Extract the geometries in one element (split the MultiLineString)
             point_coordinates = elem["geometry"]["coordinates"]
-            return point_coordinates
+            return point_coordinates[0:2]
+
+
+def extract_points_from_kml(path_to_file):
+    tree = ElementTree()
+    tree.parse(path_to_file)
+    point_coordinates = tree.find(".//{http://www.opengis.net/kml/2.2}coordinates").text
+    point_coordinates = point_coordinates.split(",")[0:2]
+    point_coordinates = tuple(map(float, point_coordinates))
+    return point_coordinates
 
 
 # Get coordinates to variable
-poi_coordinates = extract_points_from_shape(poi_shapefile)[0:2]
+if poi_file[-3:len(poi_file)] == "shp":
+    poi_coordinates = extract_points_from_shape(poi_file)
+if poi_file[-3:len(poi_file)] == "kml":
+    poi_coordinates = extract_points_from_kml(poi_file)
+else:
+    print("File format nor supported")
 poi_geoseries = gpd.GeoSeries([Point(poi_coordinates)])
 poi_coord = mapping(poi_geoseries)["features"][0]["geometry"]["coordinates"]
 
@@ -81,20 +96,13 @@ dataTypeDict["poi_latitude"] = np.dtype(float)
 dataTypeDict["poi_longitude"] = np.dtype(float)
 
 # Append coordinate of each waypoint to the output dataset
-# for coordinate in shapefile_coordinates:
 for coordinate in buffer_coordinates:
-    # print(coordinate)
-    # output_string = column_titles + litchi_dict["latitude"]
-
     # Set wanted values for each parameter iterating through all waypoints
     litchi_dict["latitude"] = coordinate[1]
     litchi_dict["longitude"] = coordinate[0]
     litchi_dict["altitude(m)"] = altitude
-    # litchi_dict["heading(deg)"] = 250
-    # litchi_dict["gimbalpitchangle"] = -65
     litchi_dict["poi_latitude"] = poi_coordinates[1]
     litchi_dict["poi_longitude"] = poi_coordinates[0]
-    # litchi_dict["poi_altitude(m)"] = 0
     litchi_dict["photo_timeinterval"] = photo_timeinterval
 
     # Set all values to float and append to list for output:
