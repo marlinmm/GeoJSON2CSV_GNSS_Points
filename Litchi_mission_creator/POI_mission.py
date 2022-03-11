@@ -51,11 +51,6 @@ def geodesic_point_buffer(lat, lon, m):
         pyproj.transform,
         pyproj.Proj(aeqd_proj.format(lat=lat, lon=lon)),
         proj_wgs84)
-    print(project)
     # Create buffer
     buf = Point(0, 0).buffer(m)  # distance in metres
-    print(buf)
-    test = transform(project, buf).exterior.coords[:]
-    print(test)
-    # print(buf)
     return transform(project, buf).exterior.coords[:]

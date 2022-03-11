@@ -48,7 +48,6 @@ def mission_creator():
 
     if mission_bool == "grid":
         mission_coordinates = shape_to_grid_mission(input_file, altitude, side_overlap)
-        print(mission_coordinates)
 
     # Initialize Litchi default dictionary
     litchi_dict = dict(zip(column_titles_list, default_mission_values))
