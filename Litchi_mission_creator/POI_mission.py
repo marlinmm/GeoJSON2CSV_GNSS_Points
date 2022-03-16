@@ -13,7 +13,7 @@ def input_dtype_selection(input_file):
         poi_coordinates = extract_points_from_shape(input_file)
     if input_file[-3:len(input_file)] == "kml":
         poi_coordinates = extract_points_from_kml(input_file)
-    else:
+    if input_file[-3:len(input_file)] != "shp" and input_file[-3:len(input_file)] != "kml":
         print("File format nor supported")
 
     poi_geoseries = gpd.GeoSeries([Point(poi_coordinates)])
