@@ -5,48 +5,58 @@ from Litchi_grid_mission import shape_to_grid_mission
 from POI_mission import *
 
 # Set path to POI (point) file (.shp or .kml)
-input_file = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_polygon.shp"  # grid
-# input_file = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_poi.shp"  # poi
+# input_file = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_polygon.shp"  # grid
+input_file = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Shapes/jena_forst_poi.shp"  # poi
+
+# Alternative to POI file just specify point coordinates (lat, lon in EPSG:4326):
+poi_coordinates = (50.91540850, 11.5425284135)
 
 # Set output path and output filename:
 out_path = "C:/Users/muel_m31/Desktop/UCEA/Litchi/Missions"
-out_filename = "jena_forst_test_grid"
+out_filename = "jena_forst"
 
 # Set other flight parameters:
-altitude = 100  # meters
+altitude = 120  # meters
 photo_timeinterval = 3  # seconds
 poi_radius = 100  # meters
 front_overlap = 80  # percent
 side_overlap = 80  # percent
 gimbal_angle = -90  # degrees (0 to -90)
 
-# EPSG code for correct calculateions of flight pattern (Jena: 32632, Aklavik:32608)
+# EPSG code for correct calculations of flight pattern (Jena: 32632, Aklavik:32608)
 projected_crs_epsg_code = 32632
 
 # Mission bool sets type of mission (POI mission: "poi", Grid mission: "grid")
-mission_bool = "grid"
+mission_bool = "poi"
 
 
 def mission_creator():
-    final_out_filename = out_filename + "_" + str(altitude) + "m_" + str(photo_timeinterval) + "s_" + str(poi_radius) + \
-                         "m.csv"
-
     # Load default Litchi mission file
     litchi_default_mission = "empty_litchi_mission.csv"
     litchi_mission = pd.read_csv(litchi_default_mission)
 
     # Extract column names of the default mission to list
     column_titles_list = litchi_mission.columns.tolist()
-    column_titles = str(column_titles_list)[1:len(str(column_titles_list)) - 1] + str("\n")
+    # column_titles = str(column_titles_list)[1:len(str(column_titles_list)) - 1] + str("\n")
 
     # Extract default values of the default mission to list
     default_mission_values = litchi_mission.values.tolist()[0]
 
     if mission_bool == "poi":
-        poi_coord = input_dtype_selection(input_file)
-        mission_coordinates = geodesic_point_buffer(poi_coord[1], poi_coord[0], poi_radius)
+        final_out_filename = out_filename + mission_bool + "_alt_" + str(altitude) + "m_POIradius_" + str(poi_radius) \
+                             + "m.csv"
+        try:
+            poi_coord = input_dtype_selection(input_file)
+            mission_coordinates = geodesic_point_buffer(poi_coord[1], poi_coord[0], poi_radius)
+        except NameError:
+            poi_coord = poi_coordinates
+            mission_coordinates = geodesic_point_buffer(poi_coord[0], poi_coord[1], poi_radius)
+
 
     if mission_bool == "grid":
+        final_out_filename = out_filename + "_" + mission_bool + "_alt_" + str(altitude) + "m_sideoverlap_" + \
+                             str(side_overlap) + "m_frontoverlap_" + str(front_overlap) + "m_gimbalangle_" + \
+                             str(gimbal_angle) + "deg.csv"
         mission_coordinates = shape_to_grid_mission(input_file, altitude, side_overlap)
 
     # Initialize Litchi default dictionary
@@ -74,6 +84,7 @@ def mission_creator():
             litchi_dict["longitude"] = coordinate[0]
             litchi_dict["altitude(m)"] = altitude
             litchi_dict["gimbalmode"] = 2
+            litchi_dict["heading(deg)"] = 90
             litchi_dict["gimbalpitchangle"] = gimbal_angle
             litchi_dict["speed(m/s)"] = 1.2
             litchi_dict["photo_timeinterval"] = -1
